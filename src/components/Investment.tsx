@@ -17,7 +17,7 @@ export function Investment() {
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
         className="absolute -right-20 -bottom-20 md:right-[5%] md:bottom-[-10%] w-[480px] md:w-[640px] aspect-[5/6] pointer-events-none"
       >
-        <IsotipoMark className="w-full h-full" stroke="white" strokeWidth={0.5} />
+        <IsotipoMark className="w-full h-full" color="white" accent="white" />
       </motion.div>
 
       <div className="container-pro relative z-10 grid lg:grid-cols-12 gap-10">

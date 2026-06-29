@@ -53,7 +53,7 @@ export function Hero() {
         className="hidden md:block absolute right-[6%] top-1/2 -translate-y-1/2 w-[42vw] max-w-[640px] aspect-[5/6] pointer-events-none"
         aria-hidden="true"
       >
-        <IsotipoMark className="w-full h-full" stroke="rgba(255,255,255,0.45)" strokeWidth={0.6} />
+        <IsotipoMark className="w-full h-full" color="rgba(255,255,255,0.85)" accent="rgba(255,255,255,0.45)" />
       </motion.div>
 
       <div className="container-pro relative z-10 flex flex-col justify-end min-h-[100svh] pt-40 pb-20">
