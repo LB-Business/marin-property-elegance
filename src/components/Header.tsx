@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { MarinLogo } from "./MarinLogo";
 
 const NAV = [
-  { label: "Inicio", href: "#inicio" },
-  { label: "Propiedades", href: "#propiedades" },
-  { label: "Servicios", href: "#servicios" },
-  { label: "Nosotros", href: "#nosotros" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Inicio", href: "/#inicio" },
+  { label: "Propiedades", href: "/propiedades" },
+  { label: "Servicios", href: "/#servicios" },
+  { label: "Construcciones", href: "/#construcciones" },
+  { label: "Nosotros", href: "/#nosotros" },
+  { label: "Contacto", href: "/#contacto" },
 ];
 
 const WHATSAPP_URL = "https://wa.me/5491173610605";
@@ -35,16 +36,16 @@ export function Header() {
       }`}
     >
       <div className="container-pro flex items-center justify-between h-[78px]">
-        <a href="#inicio" aria-label="Marin Propiedades — inicio">
+        <a href="/#inicio" aria-label="Marin Propiedades — inicio">
           <MarinLogo variant={scrolled ? "dark" : "light"} />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-9">
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
           {NAV.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className={`text-[0.78rem] font-medium tracking-[0.16em] uppercase transition-colors ${
+              className={`text-[0.72rem] xl:text-[0.78rem] font-medium tracking-[0.14em] xl:tracking-[0.16em] uppercase transition-colors ${
                 scrolled ? "text-foreground hover:text-navy" : "text-white/85 hover:text-white"
               }`}
             >
@@ -66,6 +67,7 @@ export function Header() {
           >
             WhatsApp
           </a>
+
           <button
             type="button"
             aria-label="Abrir menú"
@@ -73,9 +75,21 @@ export function Header() {
             className="lg:hidden grid place-items-center w-10 h-10"
           >
             <div className="flex flex-col gap-[5px]">
-              <span className={`block h-px w-6 transition-all ${scrolled ? "bg-navy" : "bg-white"} ${open ? "translate-y-[6px] rotate-45" : ""}`} />
-              <span className={`block h-px w-6 transition-all ${scrolled ? "bg-navy" : "bg-white"} ${open ? "opacity-0" : ""}`} />
-              <span className={`block h-px w-6 transition-all ${scrolled ? "bg-navy" : "bg-white"} ${open ? "-translate-y-[6px] -rotate-45" : ""}`} />
+              <span
+                className={`block h-px w-6 transition-all ${scrolled ? "bg-navy" : "bg-white"} ${
+                  open ? "translate-y-[6px] rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`block h-px w-6 transition-all ${scrolled ? "bg-navy" : "bg-white"} ${
+                  open ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`block h-px w-6 transition-all ${scrolled ? "bg-navy" : "bg-white"} ${
+                  open ? "-translate-y-[6px] -rotate-45" : ""
+                }`}
+              />
             </div>
           </button>
         </div>

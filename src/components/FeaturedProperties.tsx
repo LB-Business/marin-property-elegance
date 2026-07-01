@@ -54,7 +54,7 @@ export function FeaturedProperties() {
               Una selección curada de oportunidades en Canning y zona sur.
             </motion.h2>
           </div>
-          <a href="#contacto" className="btn-outline-dark whitespace-nowrap">Ver todas</a>
+          <a href="/propiedades" className="btn-outline-dark whitespace-nowrap">Ver todas</a>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

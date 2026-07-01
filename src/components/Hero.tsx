@@ -98,7 +98,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 1.05 }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <a href="#propiedades" className="btn-base bg-white text-navy hover:bg-bone">
+          <a href="/propiedades" className="btn-base bg-white text-navy hover:bg-bone">
             Ver propiedades
             <span aria-hidden>→</span>
           </a>

@@ -5,6 +5,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { FeaturedProperties } from "@/components/FeaturedProperties";
 import { About } from "@/components/About";
 import { Services } from "@/components/Services";
+import { Construction } from "@/components/Construction";
 import { Process } from "@/components/Process";
 import { Investment } from "@/components/Investment";
 import { Location } from "@/components/Location";
@@ -14,7 +15,7 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 const SITE_TITLE = "Marin Propiedades | Inmobiliaria en Canning";
 const SITE_DESC =
-  "Propiedades, inversiones y desarrollos inmobiliarios en Canning. Asesoramiento integral para comprar, vender, alquilar o invertir.";
+  "Propiedades, inversiones, desarrollos y construcciones llave en mano en Canning. Asesoramiento integral para comprar, vender, alquilar, invertir o construir.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +50,16 @@ export const Route = createFileRoute("/")({
             addressCountry: "AR",
           },
           sameAs: ["https://instagram.com/marinprop"],
+          makesOffer: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Construcción llave en mano",
+                areaServed: "Canning y Zona Sur GBA",
+              },
+            },
+          ],
         }),
       },
     ],
@@ -65,6 +76,7 @@ function Index() {
       <FeaturedProperties />
       <About />
       <Services />
+      <Construction />
       <Process />
       <Investment />
       <Location />
