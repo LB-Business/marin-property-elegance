@@ -69,7 +69,7 @@ export function Hero() {
         </motion.div>
 
         <h1 className="headline-display text-[clamp(2.4rem,6.4vw,5.6rem)] max-w-5xl">
-          {["Propiedades,", "inversión y desarrollo", "en Canning."].map((line, i) => (
+          {["Propiedades,", "inversión y desarrollo"].map((line, i) => (
             <motion.span
               key={i}
               initial={{ opacity: 0, y: 40 }}
@@ -112,15 +112,13 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.4 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-8 border-t border-white/15 pt-8"
+          className="mt-20 flex justify-center items-center gap-24 border-t border-white/15 pt-8"
         >
           {[
-            ["+15", "Años de experiencia"],
-            ["+200", "Operaciones concretadas"],
             ["100%", "Asesoramiento integral"],
             ["Canning", "Y zona sur GBA"],
           ].map(([k, v]) => (
-            <div key={v}>
+            <div key={v} > 
               <div className="text-2xl md:text-3xl font-light tracking-tight">{k}</div>
               <div className="text-[0.7rem] mt-1 tracking-[0.18em] uppercase text-white/55">{v}</div>
             </div>

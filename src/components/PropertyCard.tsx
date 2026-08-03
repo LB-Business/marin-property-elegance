@@ -249,7 +249,9 @@ function formatPropertyType(propertyType?: string) {
         ph: "PH",
         duplex: "Dúplex",
         desarrollo: "Desarrollo",
+        
         otro: "Propiedad",
+        
     };
 
     return labels[propertyType || ""] || "Propiedad";

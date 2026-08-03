@@ -5,7 +5,7 @@ const WHATSAPP_URL = "https://wa.me/5491173610605";
 const SERVICES = [
   {
     title: "Compra y venta",
-    desc: "Asesoramiento integral en todo el ciclo de la operación, desde la valuación hasta la escritura.",
+    desc: "Asesoramiento integral en todo el ciclo de la operación, desde la tasación hasta la escritura.",
     icon: (
       <svg viewBox="0 0 48 48" fill="none" className="w-7 h-7">
         <path d="M6 42V20L24 6L42 20V42H30V28H18V42H6Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>

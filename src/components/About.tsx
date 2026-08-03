@@ -34,7 +34,7 @@ export function About() {
             Una operación inmobiliaria es una decisión patrimonial.
           </motion.h2>
 
-          <div className="mt-10 space-y-6 text-[1.02rem] leading-relaxed text-muted-foreground max-w-xl">
+          <div className="mt-10 space-y-6 text-[1.02rem] leading-relaxed text-muted-foreground max-w-xl text-justify">
             {[
               "En Marin Propiedades entendemos que una operación inmobiliaria es mucho más que una compra o una venta: es una decisión que impacta en el patrimonio y en el futuro de nuestros clientes.",
               "Nuestra experiencia en el sector inmobiliario y en el desarrollo de proyectos nos permite brindar un asesoramiento integral, acompañando cada operación con una visión estratégica, comercial y financiera.",
