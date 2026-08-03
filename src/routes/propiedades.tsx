@@ -1,11 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { PropertyCard } from "@/components/PropertyCard";
 import { useMarinProperties } from "@/hooks/useMarinProperties";
+
+import type {
+  PropertyOperationType,
+  PropertyType,
+} from "@/types/property";
 
 export const Route = createFileRoute("/propiedades")({
   component: PropertiesPage,
@@ -13,8 +19,12 @@ export const Route = createFileRoute("/propiedades")({
 
 function PropertiesPage() {
   const [search, setSearch] = useState("");
-  const [operationType, setOperationType] = useState("Todas");
-  const [propertyType, setPropertyType] = useState("Todos");
+  const [operationType, setOperationType] = useState<
+    PropertyOperationType | "Todas"
+  >("Todas");
+  const [propertyType, setPropertyType] = useState<
+    PropertyType | "Todos"
+  >("Todos");
   const [zone, setZone] = useState("Todas");
 
   const {
@@ -30,11 +40,59 @@ function PropertiesPage() {
     zone,
   });
 
+  const sortedPropertyTypes = useMemo(() => {
+    const values = propertyTypes.filter(
+      (type) => normalizeValue(type) !== "todos"
+    );
+
+    return [
+      "Todos",
+      ...values.sort((a, b) =>
+        formatPropertyType(a).localeCompare(
+          formatPropertyType(b),
+          "es",
+          {
+            sensitivity: "base",
+          }
+        )
+      ),
+    ];
+  }, [propertyTypes]);
+
+  const sortedZones = useMemo(() => {
+    const values = zones.filter(
+      (item) =>
+        normalizeValue(item) !== "todos" &&
+        normalizeValue(item) !== "todas"
+    );
+
+    return [
+      "Todas",
+      ...values.sort((a, b) =>
+        a.localeCompare(b, "es", {
+          sensitivity: "base",
+        })
+      ),
+    ];
+  }, [zones]);
+
   const hasFilters =
     search.trim() !== "" ||
     operationType !== "Todas" ||
     propertyType !== "Todos" ||
     zone !== "Todas";
+
+  const resultText = useMemo(() => {
+    if (loading) {
+      return "Cargando propiedades...";
+    }
+
+    if (filteredProperties.length === 1) {
+      return "1 propiedad encontrada";
+    }
+
+    return `${filteredProperties.length} propiedades encontradas`;
+  }, [filteredProperties.length, loading]);
 
   function clearFilters() {
     setSearch("");
@@ -72,7 +130,7 @@ function PropertiesPage() {
                 </p>
               </div>
 
-              {hasFilters ? (
+              {hasFilters && (
                 <button
                   type="button"
                   onClick={clearFilters}
@@ -80,7 +138,7 @@ function PropertiesPage() {
                 >
                   Limpiar filtros
                 </button>
-              ) : null}
+              )}
             </div>
           </motion.div>
 
@@ -98,7 +156,9 @@ function PropertiesPage() {
 
                 <input
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) =>
+                    setSearch(event.target.value)
+                  }
                   placeholder="Buscar por título, zona o ciudad..."
                   className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy"
                 />
@@ -111,13 +171,21 @@ function PropertiesPage() {
 
                 <select
                   value={operationType}
-                  onChange={(event) => setOperationType(event.target.value)}
+                  onChange={(event) =>
+                    setOperationType(
+                      event.target.value as
+                        | PropertyOperationType
+                        | "Todas"
+                    )
+                  }
                   className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy"
                 >
                   <option value="Todas">Todas</option>
                   <option value="venta">Venta</option>
                   <option value="alquiler">Alquiler</option>
-                  <option value="temporario">Temporario</option>
+                  <option value="temporario">
+                    Temporario
+                  </option>
                 </select>
               </label>
 
@@ -128,12 +196,21 @@ function PropertiesPage() {
 
                 <select
                   value={propertyType}
-                  onChange={(event) => setPropertyType(event.target.value)}
-                  className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy"
+                  disabled={loading}
+                  onChange={(event) =>
+                    setPropertyType(
+                      event.target.value as
+                        | PropertyType
+                        | "Todos"
+                    )
+                  }
+                  className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy disabled:cursor-wait disabled:opacity-60"
                 >
-                  {propertyTypes.map((type) => (
+                  {sortedPropertyTypes.map((type) => (
                     <option key={type} value={type}>
-                      {type === "Todos" ? "Todos" : formatPropertyType(type)}
+                      {type === "Todos"
+                        ? "Todos"
+                        : formatPropertyType(type)}
                     </option>
                   ))}
                 </select>
@@ -146,12 +223,17 @@ function PropertiesPage() {
 
                 <select
                   value={zone}
-                  onChange={(event) => setZone(event.target.value)}
-                  className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy"
+                  disabled={loading}
+                  onChange={(event) =>
+                    setZone(event.target.value)
+                  }
+                  className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy disabled:cursor-wait disabled:opacity-60"
                 >
-                  {zones.map((item) => (
+                  {sortedZones.map((item) => (
                     <option key={item} value={item}>
-                      {item}
+                      {item === "Todas"
+                        ? "Todas"
+                        : formatGenericLabel(item)}
                     </option>
                   ))}
                 </select>
@@ -161,13 +243,11 @@ function PropertiesPage() {
 
           <div className="mb-10 flex items-center justify-between gap-6">
             <h2 className="headline-display text-[clamp(2rem,4vw,3.2rem)] text-navy">
-              {loading
-                ? "Cargando propiedades..."
-                : `${filteredProperties.length} propiedades encontradas`}
+              {resultText}
             </h2>
           </div>
 
-          {loading ? (
+          {loading && (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
               {[1, 2, 3, 4, 5, 6].map((item) => (
                 <div
@@ -176,9 +256,9 @@ function PropertiesPage() {
                 />
               ))}
             </div>
-          ) : null}
+          )}
 
-          {!loading && error ? (
+          {!loading && error && (
             <div className="bg-white border border-line p-10 text-center">
               <h3 className="text-2xl font-light text-navy">
                 No pudimos cargar las propiedades.
@@ -188,31 +268,38 @@ function PropertiesPage() {
                 {error}
               </p>
             </div>
-          ) : null}
+          )}
 
-          {!loading && !error && filteredProperties.length === 0 ? (
-            <div className="bg-white border border-line p-10 text-center">
-              <h3 className="text-2xl font-light text-navy">
-                No encontramos propiedades con esos filtros.
-              </h3>
+          {!loading &&
+            !error &&
+            filteredProperties.length === 0 && (
+              <div className="bg-white border border-line p-10 text-center">
+                <h3 className="text-2xl font-light text-navy">
+                  No encontramos propiedades con esos filtros.
+                </h3>
 
-              <p className="mt-3 text-sm text-muted-foreground">
-                Probá modificando la búsqueda o consultanos por WhatsApp.
-              </p>
-            </div>
-          ) : null}
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Probá modificando la búsqueda o consultanos por
+                  WhatsApp.
+                </p>
+              </div>
+            )}
 
-          {!loading && !error && filteredProperties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {filteredProperties.map((property, index) => (
-                <PropertyCard
-                  key={property._id}
-                  property={property}
-                  index={index}
-                />
-              ))}
-            </div>
-          ) : null}
+          {!loading &&
+            !error &&
+            filteredProperties.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {filteredProperties.map(
+                  (property, index) => (
+                    <PropertyCard
+                      key={property._id}
+                      property={property}
+                      index={index}
+                    />
+                  )
+                )}
+              </div>
+            )}
         </div>
       </section>
 
@@ -223,6 +310,12 @@ function PropertiesPage() {
 }
 
 function formatPropertyType(propertyType?: string) {
+  if (!propertyType) {
+    return "Propiedad";
+  }
+
+  const normalized = normalizeValue(propertyType);
+
   const labels: Record<string, string> = {
     casa: "Casa",
     departamento: "Departamento",
@@ -231,12 +324,36 @@ function formatPropertyType(propertyType?: string) {
     local: "Local",
     oficina: "Oficina",
     galpon: "Galpón",
+    "galpon logistico": "Galpón Logístico",
     campo: "Campo",
     ph: "PH",
     duplex: "Dúplex",
     desarrollo: "Desarrollo",
-    otro: "Propiedad",
+    "fraccion de terreno": "Fracción de terreno",
+    "fraccion terreno": "Fracción de terreno",
+    otro: "Otro",
   };
 
-  return labels[propertyType || ""] || propertyType || "Propiedad";
+  return labels[normalized] || formatGenericLabel(propertyType);
+}
+
+function normalizeValue(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function formatGenericLabel(value: string) {
+  return value
+    .trim()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (letter) =>
+      letter.toUpperCase()
+    );
 }
