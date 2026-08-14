@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Marin Propiedades</title>
+  <desc id="desc">Símbolo de dos edificios blancos sobre fondo azul marino.</desc>
+
+  <rect width="512" height="512" rx="88" fill="#102746"/>
+
+  <g fill="#ffffff">
+    <path d="M112 226h102v190H112z"/>
+    <path d="M112 209h102l28-37H140z"/>
+    <path d="M242 164h132v252H242z"/>
+    <path d="M242 145h132l31-41H273z"/>
+  </g>
+</svg>
