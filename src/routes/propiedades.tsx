@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 
 import { Header } from "@/components/Header";
@@ -13,19 +13,58 @@ import type {
   PropertyType,
 } from "@/types/property";
 
+type PropertiesSearch = {
+  tipo?: string;
+};
+
+const DEFAULT_PROPERTY_TYPES: PropertyType[] = [
+  "casa",
+  "departamento",
+  "terreno",
+  "lote",
+  "local",
+  "oficina",
+  "galpon",
+  "campo",
+  "ph",
+  "duplex",
+  "desarrollo",
+  "construccion",
+  "otro",
+];
+
 export const Route = createFileRoute("/propiedades")({
+  validateSearch: (
+    search: Record<string, unknown>
+  ): PropertiesSearch => ({
+    tipo:
+      typeof search.tipo === "string" &&
+      search.tipo.trim() !== ""
+        ? search.tipo.trim().toLowerCase()
+        : undefined,
+  }),
   component: PropertiesPage,
 });
 
 function PropertiesPage() {
+  const { tipo } = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const initialPropertyType: PropertyType | "Todos" =
+    tipo || "Todos";
+
   const [search, setSearch] = useState("");
   const [operationType, setOperationType] = useState<
     PropertyOperationType | "Todas"
   >("Todas");
   const [propertyType, setPropertyType] = useState<
     PropertyType | "Todos"
-  >("Todos");
+  >(initialPropertyType);
   const [zone, setZone] = useState("Todas");
+
+  useEffect(() => {
+    setPropertyType(tipo || "Todos");
+  }, [tipo]);
 
   const {
     filteredProperties,
@@ -41,13 +80,26 @@ function PropertiesPage() {
   });
 
   const sortedPropertyTypes = useMemo(() => {
-    const values = propertyTypes.filter(
+    const apiPropertyTypes = propertyTypes.filter(
       (type) => normalizeValue(type) !== "todos"
+    );
+
+    const selectedPropertyType =
+      propertyType !== "Todos"
+        ? [propertyType]
+        : [];
+
+    const uniqueValues = Array.from(
+      new Set([
+        ...DEFAULT_PROPERTY_TYPES,
+        ...apiPropertyTypes,
+        ...selectedPropertyType,
+      ])
     );
 
     return [
       "Todos",
-      ...values.sort((a, b) =>
+      ...uniqueValues.sort((a, b) =>
         formatPropertyType(a).localeCompare(
           formatPropertyType(b),
           "es",
@@ -57,7 +109,7 @@ function PropertiesPage() {
         )
       ),
     ];
-  }, [propertyTypes]);
+  }, [propertyTypes, propertyType]);
 
   const sortedZones = useMemo(() => {
     const values = zones.filter(
@@ -68,13 +120,16 @@ function PropertiesPage() {
 
     return [
       "Todas",
-      ...values.sort((a, b) =>
+      ...Array.from(new Set(values)).sort((a, b) =>
         a.localeCompare(b, "es", {
           sensitivity: "base",
         })
       ),
     ];
   }, [zones]);
+
+  const isConstructionFilter =
+    normalizeValue(propertyType) === "construccion";
 
   const hasFilters =
     search.trim() !== "" ||
@@ -84,21 +139,52 @@ function PropertiesPage() {
 
   const resultText = useMemo(() => {
     if (loading) {
-      return "Cargando propiedades...";
+      return isConstructionFilter
+        ? "Cargando construcciones..."
+        : "Cargando propiedades...";
     }
 
     if (filteredProperties.length === 1) {
-      return "1 propiedad encontrada";
+      return isConstructionFilter
+        ? "1 construcción encontrada"
+        : "1 propiedad encontrada";
     }
 
-    return `${filteredProperties.length} propiedades encontradas`;
-  }, [filteredProperties.length, loading]);
+    return isConstructionFilter
+      ? `${filteredProperties.length} construcciones encontradas`
+      : `${filteredProperties.length} propiedades encontradas`;
+  }, [
+    filteredProperties.length,
+    loading,
+    isConstructionFilter,
+  ]);
+
+  function handlePropertyTypeChange(
+    value: PropertyType | "Todos"
+  ) {
+    setPropertyType(value);
+
+    navigate({
+      search:
+        value === "Todos"
+          ? {}
+          : {
+              tipo: value,
+            },
+      replace: true,
+    });
+  }
 
   function clearFilters() {
     setSearch("");
     setOperationType("Todas");
     setPropertyType("Todos");
     setZone("Todas");
+
+    navigate({
+      search: {},
+      replace: true,
+    });
   }
 
   return (
@@ -115,18 +201,24 @@ function PropertiesPage() {
           >
             <div className="eyebrow flex items-center gap-3">
               <span className="h-px w-8 bg-navy" />
-              Propiedades
+
+              {isConstructionFilter
+                ? "Construcciones"
+                : "Propiedades"}
             </div>
 
             <div className="mt-5 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
               <div>
                 <h1 className="headline-display text-[clamp(2.4rem,5.5vw,5rem)] max-w-4xl leading-[0.95] text-navy">
-                  Propiedades disponibles
+                  {isConstructionFilter
+                    ? "Construcciones disponibles"
+                    : "Propiedades disponibles"}
                 </h1>
 
                 <p className="mt-6 max-w-2xl text-muted-foreground text-base md:text-lg leading-relaxed">
-                  Explorá las propiedades publicadas por Marin Propiedades.
-                  Los datos se actualizan automáticamente desde LB Business.
+                  {isConstructionFilter
+                    ? "Explorá los proyectos y obras publicados por Marin Propiedades. Los datos se actualizan automáticamente desde LB Business."
+                    : "Explorá las propiedades publicadas por Marin Propiedades. Los datos se actualizan automáticamente desde LB Business."}
                 </p>
               </div>
 
@@ -145,7 +237,10 @@ function PropertiesPage() {
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.08 }}
+            transition={{
+              duration: 0.65,
+              delay: 0.08,
+            }}
             className="bg-white border border-line shadow-sm p-5 md:p-7 mb-12"
           >
             <div className="grid gap-4 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
@@ -180,11 +275,24 @@ function PropertiesPage() {
                   }
                   className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy"
                 >
-                  <option value="Todas">Todas</option>
-                  <option value="venta">Venta</option>
-                  <option value="alquiler">Alquiler</option>
+                  <option value="Todas">
+                    Todas
+                  </option>
+
+                  <option value="venta">
+                    Venta
+                  </option>
+
+                  <option value="alquiler">
+                    Alquiler
+                  </option>
+
                   <option value="temporario">
                     Temporario
+                  </option>
+
+                  <option value="alquiler_temporario">
+                    Alquiler temporario
                   </option>
                 </select>
               </label>
@@ -198,7 +306,7 @@ function PropertiesPage() {
                   value={propertyType}
                   disabled={loading}
                   onChange={(event) =>
-                    setPropertyType(
+                    handlePropertyTypeChange(
                       event.target.value as
                         | PropertyType
                         | "Todos"
@@ -207,7 +315,10 @@ function PropertiesPage() {
                   className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy disabled:cursor-wait disabled:opacity-60"
                 >
                   {sortedPropertyTypes.map((type) => (
-                    <option key={type} value={type}>
+                    <option
+                      key={type}
+                      value={type}
+                    >
                       {type === "Todos"
                         ? "Todos"
                         : formatPropertyType(type)}
@@ -230,7 +341,10 @@ function PropertiesPage() {
                   className="h-12 w-full border border-line bg-white px-4 text-sm outline-none transition focus:border-navy disabled:cursor-wait disabled:opacity-60"
                 >
                   {sortedZones.map((item) => (
-                    <option key={item} value={item}>
+                    <option
+                      key={item}
+                      value={item}
+                    >
                       {item === "Todas"
                         ? "Todas"
                         : formatGenericLabel(item)}
@@ -261,7 +375,7 @@ function PropertiesPage() {
           {!loading && error && (
             <div className="bg-white border border-line p-10 text-center">
               <h3 className="text-2xl font-light text-navy">
-                No pudimos cargar las propiedades.
+                No pudimos cargar la información.
               </h3>
 
               <p className="mt-3 text-sm text-muted-foreground">
@@ -275,12 +389,15 @@ function PropertiesPage() {
             filteredProperties.length === 0 && (
               <div className="bg-white border border-line p-10 text-center">
                 <h3 className="text-2xl font-light text-navy">
-                  No encontramos propiedades con esos filtros.
+                  {isConstructionFilter
+                    ? "Todavía no hay construcciones publicadas."
+                    : "No encontramos propiedades con esos filtros."}
                 </h3>
 
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Probá modificando la búsqueda o consultanos por
-                  WhatsApp.
+                  {isConstructionFilter
+                    ? "Próximamente vas a poder conocer nuestros proyectos y obras."
+                    : "Probá modificando la búsqueda o consultanos por WhatsApp."}
                 </p>
               </div>
             )}
@@ -329,12 +446,16 @@ function formatPropertyType(propertyType?: string) {
     ph: "PH",
     duplex: "Dúplex",
     desarrollo: "Desarrollo",
+    construccion: "Construcción",
     "fraccion de terreno": "Fracción de terreno",
     "fraccion terreno": "Fracción de terreno",
     otro: "Otro",
   };
 
-  return labels[normalized] || formatGenericLabel(propertyType);
+  return (
+    labels[normalized] ||
+    formatGenericLabel(propertyType)
+  );
 }
 
 function normalizeValue(value: string) {

@@ -29,7 +29,9 @@ export function Construction() {
       className="relative overflow-hidden py-24 md:py-36 bg-navy text-white border-t border-white/10"
     >
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_55%)]" />
+
       <div className="absolute -right-24 top-20 hidden lg:block w-[34rem] h-[34rem] border border-white/10 rotate-45" />
+
       <div className="absolute right-24 bottom-16 hidden lg:block w-64 h-64 bg-white/[0.035] rotate-45" />
 
       <div className="container-pro relative z-10">
@@ -43,6 +45,7 @@ export function Construction() {
               className="flex items-center gap-4 text-white/60 mb-8"
             >
               <span className="h-px w-12 bg-white/30" />
+
               <span className="text-[0.7rem] tracking-[0.32em] uppercase font-semibold">
                 Construcciones
               </span>
@@ -75,7 +78,7 @@ export function Construction() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.8, delay: 0.18 }}
-              className="mt-10 flex flex-wrap gap-4"
+              className="mt-10 flex flex-col items-start gap-4"
             >
               <a
                 href={WHATSAPP_URL}
@@ -87,8 +90,19 @@ export function Construction() {
                 <span aria-hidden>→</span>
               </a>
 
-              <a href="#contacto" className="btn-outline-light">
+              <a
+                href="#contacto"
+                className="btn-outline-light"
+              >
                 Hablar con un asesor
+              </a>
+
+              <a
+                href="/propiedades?tipo=construccion"
+                className="btn-outline-light"
+              >
+                Ver construcciones
+                <span aria-hidden>→</span>
               </a>
             </motion.div>
           </div>
@@ -101,13 +115,17 @@ export function Construction() {
                   initial={{ opacity: 0, y: 26 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
-                  transition={{ duration: 0.7, delay: index * 0.08 }}
+                  transition={{
+                    duration: 0.7,
+                    delay: index * 0.08,
+                  }}
                   className="group min-h-[230px] border border-white/12 bg-white/[0.045] p-7 md:p-8 hover:bg-white/[0.075] transition-colors"
                 >
                   <div className="flex items-center justify-between mb-10">
                     <span className="text-[0.7rem] tracking-[0.26em] uppercase text-white/45 font-semibold">
                       0{index + 1}
                     </span>
+
                     <span className="h-px w-10 bg-white/20 group-hover:w-16 transition-all" />
                   </div>
 
@@ -133,6 +151,7 @@ export function Construction() {
                 <div className="text-[0.68rem] tracking-[0.28em] uppercase text-navy/55 font-semibold mb-4">
                   Servicio integral
                 </div>
+
                 <h3 className="text-2xl md:text-3xl font-light tracking-tight">
                   Ideal para clientes que buscan construir sin ocuparse de toda
                   la gestión técnica y operativa.
@@ -141,13 +160,20 @@ export function Construction() {
 
               <div className="grid grid-cols-2 gap-6 md:gap-8 text-center md:text-left">
                 <div>
-                  <div className="text-3xl font-light">360°</div>
+                  <div className="text-3xl font-light">
+                    360°
+                  </div>
+
                   <div className="mt-1 text-[0.65rem] tracking-[0.18em] uppercase text-navy/50">
                     Gestión
                   </div>
                 </div>
+
                 <div>
-                  <div className="text-3xl font-light">1</div>
+                  <div className="text-3xl font-light">
+                    1
+                  </div>
+
                   <div className="mt-1 text-[0.65rem] tracking-[0.18em] uppercase text-navy/50">
                     Equipo
                   </div>

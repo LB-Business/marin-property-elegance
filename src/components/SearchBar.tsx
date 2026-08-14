@@ -2,10 +2,34 @@ import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { useMarinProperties } from "@/hooks/useMarinProperties";
 
-const OPERACIONES = ["Comprar", "Alquilar", "Invertir"];
-const AMBIENTES = ["1", "2", "3", "4", "5+"];
+const OPERACIONES = [
+  "Comprar",
+  "Alquilar",
+  "Invertir",
+];
 
-const WHATSAPP_URL = "https://wa.me/5491173610605";
+const DEFAULT_PROPERTY_TYPES = [
+  "casa",
+  "departamento",
+  "terreno",
+  "lote",
+  "local",
+  "oficina",
+  "galpon",
+  "campo",
+  "ph",
+  "duplex",
+  "desarrollo",
+  "construccion",
+];
+
+const AMBIENTES = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5+",
+];
 
 type SelectOption = {
   value: string;
@@ -13,10 +37,12 @@ type SelectOption = {
 };
 
 export function SearchBar() {
-  const [op, setOp] = useState("Comprar");
-  const [tipo, setTipo] = useState("");
-  const [zona, setZona] = useState("");
-  const [amb, setAmb] = useState("");
+  const [operation, setOperation] =
+    useState("Comprar");
+  const [propertyType, setPropertyType] =
+    useState("");
+  const [zone, setZone] = useState("");
+  const [rooms, setRooms] = useState("");
 
   const {
     propertyTypes,
@@ -24,16 +50,30 @@ export function SearchBar() {
     loading,
   } = useMarinProperties();
 
-  const typeOptions = useMemo<SelectOption[]>(() => {
-    return propertyTypes
-      .filter((propertyType) => {
-        const normalizedValue = propertyType.trim().toLowerCase();
+  const typeOptions = useMemo<
+    SelectOption[]
+  >(() => {
+    const apiTypes = propertyTypes.filter(
+      (type) => {
+        const normalized =
+          normalizeValue(type);
 
-        return normalizedValue !== "todos" && normalizedValue !== "todas";
-      })
-      .map((propertyType) => ({
-        value: propertyType,
-        label: formatPropertyType(propertyType),
+        return (
+          normalized !== "todos" &&
+          normalized !== "todas"
+        );
+      }
+    );
+
+    return Array.from(
+      new Set([
+        ...DEFAULT_PROPERTY_TYPES,
+        ...apiTypes,
+      ])
+    )
+      .map((type) => ({
+        value: type,
+        label: formatPropertyType(type),
       }))
       .sort((a, b) =>
         a.label.localeCompare(b.label, "es", {
@@ -42,12 +82,18 @@ export function SearchBar() {
       );
   }, [propertyTypes]);
 
-  const zoneOptions = useMemo<SelectOption[]>(() => {
+  const zoneOptions = useMemo<
+    SelectOption[]
+  >(() => {
     return zones
       .filter((propertyZone) => {
-        const normalizedValue = propertyZone.trim().toLowerCase();
+        const normalized =
+          normalizeValue(propertyZone);
 
-        return normalizedValue !== "todos" && normalizedValue !== "todas";
+        return (
+          normalized !== "todos" &&
+          normalized !== "todas"
+        );
       })
       .map((propertyZone) => ({
         value: propertyZone,
@@ -60,44 +106,70 @@ export function SearchBar() {
       );
   }, [zones]);
 
-  const roomOptions = useMemo<SelectOption[]>(() => {
-    return AMBIENTES.map((rooms) => ({
-      value: rooms,
-      label: rooms,
+  const roomOptions = useMemo<
+    SelectOption[]
+  >(() => {
+    return AMBIENTES.map((value) => ({
+      value,
+      label:
+        value === "1"
+          ? "1 ambiente"
+          : value === "5+"
+            ? "5 o más"
+            : `${value} ambientes`,
     }));
   }, []);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
-    const selectedType = typeOptions.find(
-      (option) => option.value === tipo
-    )?.label;
+    const params = new URLSearchParams();
 
-    const selectedZone = zoneOptions.find(
-      (option) => option.value === zona
-    )?.label;
+    const operationValue =
+      operation === "Alquilar"
+        ? "alquiler"
+        : "venta";
 
-    const message =
-      `Hola Marin Propiedades, busco ${op.toLowerCase()} ` +
-      `${selectedType || "una propiedad"}` +
-      `${selectedZone ? ` en ${selectedZone}` : ""}` +
-      `${amb ? `, ${amb} ambientes` : ""}.`;
-
-    window.open(
-      `${WHATSAPP_URL}?text=${encodeURIComponent(message)}`,
-      "_blank",
-      "noopener,noreferrer"
+    params.set(
+      "operacion",
+      operationValue
     );
-  };
+
+    if (propertyType) {
+      params.set("tipo", propertyType);
+    }
+
+    if (zone) {
+      params.set("zona", zone);
+    }
+
+    if (rooms) {
+      params.set("ambientes", rooms);
+    }
+
+    window.location.assign(
+      `/propiedades?${params.toString()}`
+    );
+  }
 
   return (
     <section className="relative -mt-16 md:-mt-20 z-20 container-pro">
       <motion.form
         onSubmit={handleSubmit}
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
+        initial={{
+          opacity: 0,
+          y: 40,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        viewport={{
+          once: true,
+          margin: "-80px",
+        }}
         transition={{
           duration: 0.8,
           ease: [0.22, 1, 0.36, 1],
@@ -105,20 +177,22 @@ export function SearchBar() {
         className="bg-white border border-line shadow-elevated p-6 md:p-8"
       >
         <div className="flex flex-wrap gap-1 mb-6 border-b border-line">
-          {OPERACIONES.map((operation) => (
+          {OPERACIONES.map((item) => (
             <button
-              key={operation}
+              key={item}
               type="button"
-              onClick={() => setOp(operation)}
+              onClick={() =>
+                setOperation(item)
+              }
               className={`px-5 py-3 text-[0.72rem] tracking-[0.18em] uppercase font-semibold transition-all relative ${
-                op === operation
+                operation === item
                   ? "text-navy"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {operation}
+              {item}
 
-              {op === operation && (
+              {operation === item && (
                 <motion.span
                   layoutId="op-underline"
                   className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-navy"
@@ -131,8 +205,8 @@ export function SearchBar() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <FilterSelect
             label="Tipo"
-            value={tipo}
-            onChange={setTipo}
+            value={propertyType}
+            onChange={setPropertyType}
             options={typeOptions}
             disabled={loading}
             loadingText="Cargando tipos..."
@@ -140,8 +214,8 @@ export function SearchBar() {
 
           <FilterSelect
             label="Zona"
-            value={zona}
-            onChange={setZona}
+            value={zone}
+            onChange={setZone}
             options={zoneOptions}
             disabled={loading}
             loadingText="Cargando zonas..."
@@ -149,8 +223,8 @@ export function SearchBar() {
 
           <FilterSelect
             label="Ambientes"
-            value={amb}
-            onChange={setAmb}
+            value={rooms}
+            onChange={setRooms}
             options={roomOptions}
           />
 
@@ -190,12 +264,16 @@ function FilterSelect({
 
       <select
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
         disabled={disabled}
         className="w-full bg-transparent text-sm font-medium text-foreground outline-none mt-1 cursor-pointer disabled:cursor-wait disabled:opacity-60"
       >
         <option value="">
-          {disabled && loadingText ? loadingText : "Todos"}
+          {disabled && loadingText
+            ? loadingText
+            : "Todos"}
         </option>
 
         {options.map((option) => (
@@ -212,13 +290,9 @@ function FilterSelect({
 }
 
 function formatPropertyType(value: string) {
-  const normalizedValue = value
-    .trim()
-    .toLowerCase()
-    .replaceAll("_", " ")
-    .replaceAll("-", " ");
+  const normalized = normalizeValue(value);
 
-  const knownLabels: Record<string, string> = {
+  const labels: Record<string, string> = {
     casa: "Casa",
     departamento: "Departamento",
     terreno: "Terreno",
@@ -226,27 +300,41 @@ function formatPropertyType(value: string) {
     local: "Local",
     oficina: "Oficina",
     galpon: "Galpón",
-    "galpón": "Galpón",
-    "galpon logistico": "Galpón Logístico",
-    "galpón logístico": "Galpón Logístico",
-    "fraccion de terreno": "Fracción de terreno",
-    "fracción de terreno": "Fracción de terreno",
+    "galpon logistico":
+      "Galpón Logístico",
+    "fraccion de terreno":
+      "Fracción de terreno",
     campo: "Campo",
     ph: "PH",
     duplex: "Dúplex",
-    "dúplex": "Dúplex",
     desarrollo: "Desarrollo",
+    construccion: "Construcción",
     otro: "Otro",
   };
 
-  return knownLabels[normalizedValue] || formatLabel(normalizedValue);
+  return (
+    labels[normalized] ||
+    formatLabel(value)
+  );
+}
+
+function normalizeValue(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
 }
 
 function formatLabel(value: string) {
   return value
     .trim()
-    .replaceAll("_", " ")
-    .replaceAll("-", " ")
+    .replace(/[_-]+/g, " ")
     .replace(/\s+/g, " ")
-    .replace(/\b\p{L}/gu, (letter) => letter.toUpperCase());
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (letter) =>
+      letter.toUpperCase()
+    );
 }
