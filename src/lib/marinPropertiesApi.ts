@@ -5,7 +5,7 @@ import type {
 } from "@/types/property";
 
 const MARIN_PROPERTIES_URL =
-  "https://api.lbcodeworks.com.ar/api/public/marin-propiedades/products";
+  "https://api.lbcodeworks.com.ar/api/public/businesses/marin-propiedades/properties";
 
 type ApiBusiness = Partial<BusinessPublic> & {
   id?: string;
