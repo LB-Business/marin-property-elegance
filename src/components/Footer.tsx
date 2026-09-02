@@ -8,11 +8,24 @@ export function Footer() {
       <div className="container-pro py-20 grid md:grid-cols-12 gap-10">
         <div className="md:col-span-5">
           <MarinLogo variant="light" />
+
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/55">
             Inmobiliaria en Canning. Propiedades, inversiones, desarrollos y
             construcciones llave en mano con asesoramiento integral y visión
             estratégica.
           </p>
+
+          <div className="mt-6 pt-5 border-t border-white/10 max-w-sm">
+            <div className="text-[0.65rem] tracking-[0.18em] uppercase text-white/40 font-semibold mb-2">
+              Martillero y Corredor Público
+            </div>
+
+            <p className="text-sm text-white/60 leading-relaxed">
+              Marin Mariano Ezequiel
+              <br />
+              Matrícula N° 4587 — CPMCLZ
+            </p>
+          </div>
         </div>
 
         <div className="md:col-span-3">
