@@ -30,11 +30,7 @@ export function useMarinProperties(filters?: UseMarinPropertiesFilters) {
       setBusiness(data.business);
       setProperties(Array.isArray(data.properties) ? data.properties : []);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Ocurrió un error al cargar las propiedades."
-      );
+      setError(err instanceof Error ? err.message : "Ocurrió un error al cargar las propiedades.");
     } finally {
       setLoading(false);
     }
@@ -49,17 +45,13 @@ export function useMarinProperties(filters?: UseMarinPropertiesFilters) {
   }, [properties]);
 
   const zones = useMemo(() => {
-    const values = publishedProperties
-      .map((property) => getPropertyZone(property))
-      .filter(Boolean);
+    const values = publishedProperties.map((property) => getPropertyZone(property)).filter(Boolean);
 
     return ["Todas", ...Array.from(new Set(values))];
   }, [publishedProperties]);
 
   const propertyTypes = useMemo(() => {
-    const values = publishedProperties
-      .map((property) => property.propertyType)
-      .filter(Boolean);
+    const values = publishedProperties.map((property) => property.propertyType).filter(Boolean);
 
     return ["Todos", ...Array.from(new Set(values))];
   }, [publishedProperties]);
@@ -72,6 +64,8 @@ export function useMarinProperties(filters?: UseMarinPropertiesFilters) {
 
     return publishedProperties.filter((property) => {
       const propertyZone = getPropertyZone(property);
+      const selectedPropertyType = normalizePropertyType(propertyType);
+      const currentPropertyType = normalizePropertyType(property.propertyType);
 
       const matchesOperation =
         !operationType ||
@@ -79,14 +73,16 @@ export function useMarinProperties(filters?: UseMarinPropertiesFilters) {
         operationType === "Todas" ||
         property.operationType === operationType;
 
-      const matchesType =
-        !propertyType ||
-        propertyType === "todas" ||
-        propertyType === "Todos" ||
-        property.propertyType === propertyType;
+      const isAllPropertyTypes =
+        !selectedPropertyType ||
+        selectedPropertyType === "todos" ||
+        selectedPropertyType === "todas";
 
-      const matchesZone =
-        !zone || zone === "Todas" || propertyZone === zone;
+      const matchesType = isAllPropertyTypes
+        ? currentPropertyType !== "construccion"
+        : currentPropertyType === selectedPropertyType;
+
+      const matchesZone = !zone || zone === "Todas" || propertyZone === zone;
 
       const searchableText = [
         property.title,
@@ -130,10 +126,13 @@ export function useMarinProperties(filters?: UseMarinPropertiesFilters) {
 }
 
 function getPropertyZone(property: PublicProperty) {
-  return (
-    property.address?.neighborhood ||
-    property.address?.city ||
-    property.address?.state ||
-    ""
-  );
+  return property.address?.neighborhood || property.address?.city || property.address?.state || "";
+}
+
+function normalizePropertyType(value?: string) {
+  return (value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
