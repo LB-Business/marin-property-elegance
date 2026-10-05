@@ -21,7 +21,7 @@ export function Footer() {
             </div>
 
             <p className="text-sm text-white/60 leading-relaxed">
-              Marin Mariano Ezequiel
+              Marin Mariano Exequiel
               <br />
               Matrícula N° 4587 — CPMCLZ
             </p>
