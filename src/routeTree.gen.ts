@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PropiedadesRouteImport } from './routes/propiedades'
+import { Route as PoliticaDePrivacidadRouteImport } from './routes/politica-de-privacidad'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PropiedadesIdRouteImport } from './routes/propiedades_.$id'
 
 const PropiedadesRoute = PropiedadesRouteImport.update({
   id: '/propiedades',
   path: '/propiedades',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoliticaDePrivacidadRoute = PoliticaDePrivacidadRouteImport.update({
+  id: '/politica-de-privacidad',
+  path: '/politica-de-privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,30 +37,40 @@ const PropiedadesIdRoute = PropiedadesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/politica-de-privacidad': typeof PoliticaDePrivacidadRoute
   '/propiedades': typeof PropiedadesRoute
   '/propiedades/$id': typeof PropiedadesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/politica-de-privacidad': typeof PoliticaDePrivacidadRoute
   '/propiedades': typeof PropiedadesRoute
   '/propiedades/$id': typeof PropiedadesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/politica-de-privacidad': typeof PoliticaDePrivacidadRoute
   '/propiedades': typeof PropiedadesRoute
   '/propiedades_/$id': typeof PropiedadesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/propiedades' | '/propiedades/$id'
+  fullPaths:
+    '/' | '/politica-de-privacidad' | '/propiedades' | '/propiedades/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/propiedades' | '/propiedades/$id'
-  id: '__root__' | '/' | '/propiedades' | '/propiedades_/$id'
+  to: '/' | '/politica-de-privacidad' | '/propiedades' | '/propiedades/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/politica-de-privacidad'
+    | '/propiedades'
+    | '/propiedades_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PoliticaDePrivacidadRoute: typeof PoliticaDePrivacidadRoute
   PropiedadesRoute: typeof PropiedadesRoute
   PropiedadesIdRoute: typeof PropiedadesIdRoute
 }
@@ -66,6 +82,13 @@ declare module '@tanstack/react-router' {
       path: '/propiedades'
       fullPath: '/propiedades'
       preLoaderRoute: typeof PropiedadesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politica-de-privacidad': {
+      id: '/politica-de-privacidad'
+      path: '/politica-de-privacidad'
+      fullPath: '/politica-de-privacidad'
+      preLoaderRoute: typeof PoliticaDePrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,6 +110,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PoliticaDePrivacidadRoute: PoliticaDePrivacidadRoute,
   PropiedadesRoute: PropiedadesRoute,
   PropiedadesIdRoute: PropiedadesIdRoute,
 }

@@ -35,12 +35,13 @@ export function Footer() {
 
           <ul className="space-y-3 text-sm">
             {[
-              ["Inicio", "#inicio"],
-              ["Propiedades", "#propiedades"],
-              ["Servicios", "#servicios"],
-              ["Construcciones", "#construcciones"],
-              ["Nosotros", "#nosotros"],
-              ["Contacto", "#contacto"],
+              ["Inicio", "/#inicio"],
+              ["Propiedades", "/#propiedades"],
+              ["Servicios", "/#servicios"],
+              ["Construcciones", "/#construcciones"],
+              ["Nosotros", "/#nosotros"],
+              ["Contacto", "/#contacto"],
+              ["Política de Privacidad", "/politica-de-privacidad"],
             ].map(([l, h]) => (
               <li key={h}>
                 <a href={h} className="hover:text-white transition-colors">

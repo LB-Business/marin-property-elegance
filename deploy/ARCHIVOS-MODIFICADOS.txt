@@ -1,0 +1,16 @@
+deploy/LEEME-PRIVACIDAD.md
+deploy/VALIDACION.md
+deploy/publicar-privacidad.sh
+index.html
+package.json
+public/sitemap.xml
+scripts/generate-sitemap.mjs
+scripts/prerender-privacy.mjs
+src/components/Footer.tsx
+src/components/PrivacyPage.tsx
+src/content/privacy.json
+src/main.tsx
+src/routeTree.gen.ts
+src/routes/__root.tsx
+src/routes/politica-de-privacidad.tsx
+deploy/ARCHIVOS-MODIFICADOS.txt

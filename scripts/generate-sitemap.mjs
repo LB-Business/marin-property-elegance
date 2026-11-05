@@ -14,7 +14,7 @@ if (!response.ok) throw new Error(`API de propiedades: HTTP ${response.status}`)
 const data = await response.json();
 const properties = Array.isArray(data.products) ? data.products : data.properties;
 if (!Array.isArray(properties)) throw new Error('La API no devolvió una lista de propiedades.');
-const entries = new Map([['/', null], ['/propiedades', null]]);
+const entries = new Map([['/', null], ['/propiedades', null], ['/politica-de-privacidad', null]]);
 for (const property of properties) {
   if (property.status !== 'published' && property.isPublished !== true) continue;
   const id = property._id || property.id || property.slug;
