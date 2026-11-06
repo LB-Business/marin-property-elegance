@@ -140,7 +140,7 @@ export function PropertyCard({ property, index = 0 }: PropertyCardProps) {
                         </div>
                         {Number.isFinite(property.expenses) && Number(property.expenses) > 0 && (
                             <p className="mt-1 text-sm text-muted-foreground">
-                                + {formatPrice(property.expenses, property.currency)} de expensas
+                                + {formatPrice(property.expenses, "ARS")} de expensas
                             </p>
                         )}
                     </div>

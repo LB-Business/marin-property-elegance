@@ -428,7 +428,7 @@ function PropertyDetailPage() {
                 </div>
                 {Number.isFinite(property.expenses) && Number(property.expenses) > 0 && (
                   <p className="mt-3 text-base font-medium text-muted-foreground">
-                    + {formatPrice(property.expenses, property.currency)} de expensas
+                    + {formatPrice(property.expenses, "ARS")} de expensas
                   </p>
                 )}
 
