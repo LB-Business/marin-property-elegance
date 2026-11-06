@@ -1,3 +1,4 @@
+import { ImageViewer } from "@/components/ImageViewer";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useMemo, useState } from "react";
@@ -69,6 +70,8 @@ function PropertyDetailPage() {
   }, [property]);
 
 
+
+  const [viewerOpen, setViewerOpen] = useState(false);
 
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
@@ -290,11 +293,13 @@ function PropertyDetailPage() {
           >
 
             <div>
+              {viewerOpen && images.length > 0 && <ImageViewer images={images} initialIndex={Math.max(0, images.findIndex(image => image.url === mainImageUrl))} title={property.title} onClose={() => setViewerOpen(false)} />}
 
               <div className="relative aspect-[4/3] bg-navy overflow-hidden border border-line">
 
                 {mainImageUrl ? (
 
+                  <button type="button" className="absolute inset-0 h-full w-full cursor-zoom-in" aria-label={`Ampliar foto de ${property.title}`} onClick={() => setViewerOpen(true)}>
                   <img
 
                     src={mainImageUrl}
@@ -305,6 +310,8 @@ function PropertyDetailPage() {
 
                   />
 
+                  <span className="absolute bottom-4 right-4 rounded-full bg-black/65 px-4 py-2 text-xs text-white">Ampliar foto +</span>
+                  </button>
                 ) : (
 
                   <>
@@ -349,7 +356,8 @@ function PropertyDetailPage() {
 
                       type="button"
 
-                      onClick={() => setSelectedImageUrl(image.url)}
+                      onClick={() => { setSelectedImageUrl(image.url); setViewerOpen(true); }}
+                      aria-label={`Ampliar foto de ${property.title}`}
 
                       className={`relative aspect-square overflow-hidden border transition ${
 
@@ -418,6 +426,11 @@ function PropertyDetailPage() {
                   {formatPrice(property.price, property.currency)}
 
                 </div>
+                {Number.isFinite(property.expenses) && Number(property.expenses) > 0 && (
+                  <p className="mt-3 text-base font-medium text-muted-foreground">
+                    + {formatPrice(property.expenses, property.currency)} de expensas
+                  </p>
+                )}
 
               </div>
 

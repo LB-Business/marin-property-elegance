@@ -138,6 +138,11 @@ export function PropertyCard({ property, index = 0 }: PropertyCardProps) {
                         <div className="text-lg font-medium text-navy mt-0.5">
                             {formatPrice(property.price, property.currency)}
                         </div>
+                        {Number.isFinite(property.expenses) && Number(property.expenses) > 0 && (
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                + {formatPrice(property.expenses, property.currency)} de expensas
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex gap-2">
